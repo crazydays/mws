@@ -20,8 +20,10 @@ public class JSONUtils
         Iterator<String> keys = (Iterator<String>) a.keys();
         while (keys.hasNext()) {
             String key = keys.next();
+            Object ao = a.get(key);
+            Object bo = b.has(key) ? b.get(key) : null;
 
-            if (!equals(a.get(key), b.get(key))) {
+            if (!equals(ao, bo)) {
                 return false;
             }
         }
