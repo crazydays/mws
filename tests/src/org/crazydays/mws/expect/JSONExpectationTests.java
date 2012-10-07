@@ -16,8 +16,6 @@ public class JSONExpectationTests
         JSONObject response = new JSONObject().put("response", "uh-hu");
 
         JSONExpectation expectation = new JSONExpectation(expect, response);
-
-        assertEquals("expect", expect, expectation.getExpect());
-        assertEquals("response", response, expectation.getResponse());
+        // TODO: implement me!
     }
 }

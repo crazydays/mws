@@ -11,9 +11,7 @@ import android.util.Log;
 import junit.framework.AssertionFailedError;
 
 import org.crazydays.mws.expect.Expectation;
-import org.crazydays.mws.expect.JSONExpectation;
-import org.crazydays.mws.handler.AbstractTestHttpRequestHandler;
-import org.crazydays.mws.handler.JSONRequestHandler;
+import org.crazydays.mws.handler.ExpectationHttpRequestHandler;
 import org.crazydays.mws.http.WebServer;
 
 public class MockWebService
@@ -22,14 +20,13 @@ public class MockWebService
 
     private List<Expectation> expectations;
 
-    private Map<String, AbstractTestHttpRequestHandler<? extends Expectation>> handlers;
+    private Map<String, ExpectationHttpRequestHandler> handlers;
 
     public MockWebService(int port)
     {
         server = new WebServer(port);
         expectations = new LinkedList<Expectation>();
-        handlers =
-            new HashMap<String, AbstractTestHttpRequestHandler<? extends Expectation>>();
+        handlers = new HashMap<String, ExpectationHttpRequestHandler>();
     }
 
     public void setup()
@@ -65,30 +62,16 @@ public class MockWebService
     private void addHandler(String path, Expectation expectation)
     {
         if (!handlers.containsKey(path)) {
-            if (expectation instanceof JSONExpectation) {
-                handlers.put(path, new JSONRequestHandler());
-            } else {
-                throw new AssertionFailedError("Unsupported expectation type: "
-                    + expectation.getClass().getSimpleName());
-            }
+            handlers.put(path, new ExpectationHttpRequestHandler());
         }
 
-        AbstractTestHttpRequestHandler<? extends Expectation> handler =
-            handlers.get(path);
-        if (handler instanceof JSONRequestHandler) {
-            ((JSONRequestHandler) handler)
-                .expect((JSONExpectation) expectation);
-        } else {
-            throw new AssertionFailedError(
-                "Unsupported expectation handler type: "
-                    + handler.getClass().getSimpleName());
-        }
+        handlers.get(path).expect(expectation);
     }
 
     public void verify()
     {
         for (Expectation expectation : expectations) {
-            if (!expectation.isMatched()) {
+            if (!expectation.didMatch()) {
                 throw new AssertionFailedError("Expectation unmatched");
             }
         }
