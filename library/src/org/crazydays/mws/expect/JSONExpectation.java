@@ -29,12 +29,12 @@ public class JSONExpectation
     private final static String CONTENT_TYPE_JSON = "application/json";
 
     private JSONObject expect;
-    private JSONObject response;
+    private JSONObject respond;
 
-    public JSONExpectation(JSONObject expect, JSONObject response)
+    public JSONExpectation(JSONObject expect, JSONObject respond)
     {
         this.expect = expect;
-        this.response = response;
+        this.respond = respond;
     }
 
     @Override
@@ -81,7 +81,7 @@ public class JSONExpectation
     private HttpEntity buildResponseEntity()
         throws UnsupportedEncodingException
     {
-        StringEntity entity = new StringEntity(this.response.toString());
+        StringEntity entity = new StringEntity(respond.toString());
 
         entity.setContentEncoding(new BasicHeader(HTTP.CONTENT_TYPE,
             CONTENT_TYPE_JSON));
