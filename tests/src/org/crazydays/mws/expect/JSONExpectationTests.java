@@ -94,6 +94,6 @@ public class JSONExpectationTests
             (JSONObject) new JSONTokener(EntityUtils.toString(response
                 .getEntity())).nextValue();
 
-        assertTrue("equal", JSONUtils.equals(respond, responded));
+        assertTrue("not equal", JSONUtils.equals(respond, responded));
     }
 }
