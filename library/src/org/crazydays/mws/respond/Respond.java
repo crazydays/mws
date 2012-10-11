@@ -10,13 +10,13 @@ import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHeader;
+
 import org.json.JSONObject;
+
+import static org.crazydays.mws.http.HttpConstants.*;
 
 public class Respond
 {
-    public final static String CONTENT_TYPE_APPLICATION_JSON =
-        "application/json";
-
     private List<Header> headers = new LinkedList<Header>();
 
     private JSONObject json;
