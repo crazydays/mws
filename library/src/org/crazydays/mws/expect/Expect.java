@@ -2,11 +2,15 @@ package org.crazydays.mws.expect;
 
 
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpRequest;
 import org.apache.http.ParseException;
+import org.apache.http.message.BasicHeader;
 import org.apache.http.util.EntityUtils;
 import org.crazydays.mws.json.JSONUtils;
 import org.json.JSONException;
@@ -19,7 +23,15 @@ import static org.crazydays.mws.http.HttpConstants.*;
 
 public class Expect
 {
+    private List<Header> headers = new LinkedList<Header>();
+
     private JSONObject json;
+
+    public Expect withHeader(String name, String value)
+    {
+        headers.add(new BasicHeader(name, value));
+        return this;
+    }
 
     public Expect withJSON(JSONObject json)
     {
@@ -30,11 +42,38 @@ public class Expect
     public boolean matches(HttpRequest request)
         throws IOException
     {
-        if (isJSON()) {
-            return matchesJSON(request);
+        if (!matchesHeaders(request)) {
+            return false;
         }
 
-        return false;
+        if (isJSON()) {
+            return matchesJSON(request);
+        } else {
+            return true;
+        }
+    }
+
+    private boolean matchesHeaders(HttpRequest request)
+    {
+        for (Header matcher : headers) {
+            if (request.containsHeader(matcher.getName())) {
+                for (Header actual : request.getHeaders(matcher.getName())) {
+                    if (!matchesHeader(matcher, actual)) {
+                        return false;
+                    }
+                }
+            } else {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private boolean matchesHeader(Header matcher, Header actual)
+    {
+        return actual.getName().equals(matcher.getName())
+            && actual.getValue().equals(matcher.getValue());
     }
 
     private boolean isJSON()
