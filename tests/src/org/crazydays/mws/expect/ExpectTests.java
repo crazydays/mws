@@ -3,6 +3,8 @@ package org.crazydays.mws.expect;
 
 import java.io.IOException;
 
+import junit.framework.AssertionFailedError;
+
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicHttpEntityEnclosingRequest;
@@ -127,4 +129,259 @@ public class ExpectTests
         assertTrue("!matched", expect.matches(request));
     }
 
+    public void testCount_none()
+    {
+        Expect expect = new Expect();
+
+        assertEquals("count", 0, expect.getCount());
+    }
+
+    public void testCount_one()
+        throws IOException
+    {
+        String name1 = "X-Made-Up-Header";
+        String value1 = "SomeValue";
+
+        BasicHttpEntityEnclosingRequest request =
+            new BasicHttpEntityEnclosingRequest("POST", "http://127.0.0.1");
+
+        request.addHeader(new BasicHeader(name1, value1));
+
+        Expect expect = new Expect().withHeader(name1, value1);
+
+        expect.matches(request);
+
+        assertEquals("count", 1, expect.getCount());
+    }
+
+    public void testCount_two()
+        throws IOException
+    {
+        String name = "X-Made-Up-Header";
+        String value = "SomeValue";
+
+        BasicHttpEntityEnclosingRequest request =
+            new BasicHttpEntityEnclosingRequest("POST", "http://127.0.0.1");
+
+        request.addHeader(new BasicHeader(name, value));
+
+        Expect expect = new Expect().withHeader(name, value);
+
+        expect.matches(request);
+        expect.matches(request);
+
+        assertEquals("count", 2, expect.getCount());
+    }
+
+    public void testVerify_no_matches()
+    {
+        Expect expect = new Expect();
+
+        try {
+            expect.verify();
+            fail("Expected failure");
+        } catch (AssertionFailedError e) {
+            // success
+        }
+    }
+
+    public void testVerify_one_match()
+        throws IOException
+    {
+        String name = "X-Made-Up-Header";
+        String value = "SomeValue";
+
+        BasicHttpEntityEnclosingRequest request =
+            new BasicHttpEntityEnclosingRequest("POST", "http://127.0.0.1");
+
+        request.addHeader(new BasicHeader(name, value));
+
+        Expect expect = new Expect().withHeader(name, value);
+        expect.matches(request);
+
+        try {
+            expect.verify();
+        } catch (AssertionFailedError e) {
+            fail("Expected no errors");
+        }
+    }
+
+    public void testVerify_two_match()
+        throws IOException
+    {
+        String name = "X-Made-Up-Header";
+        String value = "SomeValue";
+
+        BasicHttpEntityEnclosingRequest request =
+            new BasicHttpEntityEnclosingRequest("POST", "http://127.0.0.1");
+
+        request.addHeader(new BasicHeader(name, value));
+
+        Expect expect = new Expect().withHeader(name, value);
+        expect.matches(request);
+        expect.matches(request);
+
+        try {
+            expect.verify();
+            fail("Expected failure");
+        } catch (AssertionFailedError e) {
+            // success
+        }
+    }
+
+    public void testVerify_one_times_two()
+        throws IOException
+    {
+        String name = "X-Made-Up-Header";
+        String value = "SomeValue";
+
+        BasicHttpEntityEnclosingRequest request =
+            new BasicHttpEntityEnclosingRequest("POST", "http://127.0.0.1");
+
+        request.addHeader(new BasicHeader(name, value));
+
+        Expect expect = new Expect().withHeader(name, value).times(2);
+        expect.matches(request);
+
+        try {
+            expect.verify();
+            fail("Expected failure");
+        } catch (AssertionFailedError e) {
+            // success
+        }
+    }
+
+    public void testVerify_two_times_two()
+        throws IOException
+    {
+        String name = "X-Made-Up-Header";
+        String value = "SomeValue";
+
+        BasicHttpEntityEnclosingRequest request =
+            new BasicHttpEntityEnclosingRequest("POST", "http://127.0.0.1");
+
+        request.addHeader(new BasicHeader(name, value));
+
+        Expect expect = new Expect().withHeader(name, value).times(2);
+        expect.matches(request);
+        expect.matches(request);
+
+        try {
+            expect.verify();
+            fail("Expected failure");
+        } catch (AssertionFailedError e) {
+            // success
+        }
+    }
+
+    public void testVerify_any_times_zero()
+        throws IOException
+    {
+        Expect expect = new Expect().anyTimes();
+
+        try {
+            expect.verify();
+        } catch (AssertionFailedError e) {
+            fail("Expected no failure");
+        }
+    }
+
+    public void testVerify_any_times_one()
+        throws IOException
+    {
+        String name = "X-Made-Up-Header";
+        String value = "SomeValue";
+
+        BasicHttpEntityEnclosingRequest request =
+            new BasicHttpEntityEnclosingRequest("POST", "http://127.0.0.1");
+
+        request.addHeader(new BasicHeader(name, value));
+
+        Expect expect = new Expect().withHeader(name, value).anyTimes();
+        expect.matches(request);
+
+        try {
+            expect.verify();
+        } catch (AssertionFailedError e) {
+            fail("Expected no failure");
+        }
+    }
+
+    public void testVerify_any_times_two()
+        throws IOException
+    {
+        String name = "X-Made-Up-Header";
+        String value = "SomeValue";
+
+        BasicHttpEntityEnclosingRequest request =
+            new BasicHttpEntityEnclosingRequest("POST", "http://127.0.0.1");
+
+        request.addHeader(new BasicHeader(name, value));
+
+        Expect expect = new Expect().withHeader(name, value).anyTimes();
+        expect.matches(request);
+        expect.matches(request);
+
+        try {
+            expect.verify();
+        } catch (AssertionFailedError e) {
+            fail("Expected no failure");
+        }
+    }
+
+    public void testVerify_atleast_once_none()
+        throws IOException
+    {
+        Expect expect = new Expect().atleastOnce();
+
+        try {
+            expect.verify();
+            fail("Expected failure");
+        } catch (AssertionFailedError e) {
+            // success
+        }
+    }
+
+    public void testVerify_atleast_once_one()
+        throws IOException
+    {
+        String name = "X-Made-Up-Header";
+        String value = "SomeValue";
+
+        BasicHttpEntityEnclosingRequest request =
+            new BasicHttpEntityEnclosingRequest("POST", "http://127.0.0.1");
+
+        request.addHeader(new BasicHeader(name, value));
+
+        Expect expect = new Expect().withHeader(name, value).atleastOnce();
+        expect.matches(request);
+
+        try {
+            expect.verify();
+        } catch (AssertionFailedError e) {
+            fail("Expected no failure");
+        }
+    }
+
+    public void testVerify_atleast_once_two()
+        throws IOException
+    {
+        String name = "X-Made-Up-Header";
+        String value = "SomeValue";
+
+        BasicHttpEntityEnclosingRequest request =
+            new BasicHttpEntityEnclosingRequest("POST", "http://127.0.0.1");
+
+        request.addHeader(new BasicHeader(name, value));
+
+        Expect expect = new Expect().withHeader(name, value).atleastOnce();
+        expect.matches(request);
+        expect.matches(request);
+
+        try {
+            expect.verify();
+        } catch (AssertionFailedError e) {
+            fail("Expected no failure");
+        }
+    }
 }

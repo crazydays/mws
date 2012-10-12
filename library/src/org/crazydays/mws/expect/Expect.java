@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
+import android.util.Log;
+
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpEntityEnclosingRequest;
@@ -12,20 +14,27 @@ import org.apache.http.HttpRequest;
 import org.apache.http.ParseException;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.util.EntityUtils;
-import org.crazydays.mws.json.JSONUtils;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
-import android.util.Log;
+import junit.framework.AssertionFailedError;
 
+import org.crazydays.mws.json.JSONUtils;
 import static org.crazydays.mws.http.HttpConstants.*;
 
 public class Expect
 {
-    private List<Header> headers = new LinkedList<Header>();
+    private final static int DEFAULT_TIMES = 1;
+    private final static int ANY_TIMES = -1;
+    private final static int ATLEAST_ONCE_TIMES = -2;
 
+    private List<Header> headers = new LinkedList<Header>();
     private JSONObject json;
+
+    private int times = DEFAULT_TIMES;
+    private int count;
 
     public Expect withHeader(String name, String value)
     {
@@ -49,6 +58,7 @@ public class Expect
         if (isJSON()) {
             return matchesJSON(request);
         } else {
+            count++;
             return true;
         }
     }
@@ -132,5 +142,42 @@ public class Expect
         HttpRequest request)
     {
         return (HttpEntityEnclosingRequest) request;
+    }
+
+    public int getCount()
+    {
+        return count;
+    }
+
+    public Expect times(int times)
+    {
+        this.times = times;
+        return this;
+    }
+
+    public Expect anyTimes()
+    {
+        this.times = ANY_TIMES;
+        return this;
+    }
+
+    public Expect atleastOnce()
+    {
+        this.times = ATLEAST_ONCE_TIMES;
+        return this;
+    }
+
+    public void verify()
+    {
+        if (count == times) {
+            return;
+        } else if (times == ANY_TIMES) {
+            return;
+        } else if (times == ATLEAST_ONCE_TIMES && count > 0) {
+            return;
+        } else {
+            throw new AssertionFailedError(String.format(
+                "Expect %d matches, actual: %d", times, count));
+        }
     }
 }
