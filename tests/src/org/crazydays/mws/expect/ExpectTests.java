@@ -26,10 +26,9 @@ public class ExpectTests
 
         BasicHttpEntityEnclosingRequest request =
             new BasicHttpEntityEnclosingRequest("POST", "http://127.0.0.1");
-
-        StringEntity entity = new StringEntity(json.toString());
-        entity.setContentType(CONTENT_TYPE_APPLICATION_JSON);
-        request.setEntity(entity);
+        request.addHeader(new BasicHeader(CONTENT_TYPE,
+            CONTENT_TYPE_APPLICATION_JSON));
+        request.setEntity(new StringEntity(json.toString()));
 
         Expect expect = new Expect().withJSON(json);
 
@@ -45,12 +44,10 @@ public class ExpectTests
 
         BasicHttpEntityEnclosingRequest request =
             new BasicHttpEntityEnclosingRequest("POST", "http://127.0.0.1");
-
         request.addHeader(name, value);
-
-        StringEntity entity = new StringEntity(json.toString());
-        entity.setContentType(CONTENT_TYPE_APPLICATION_JSON);
-        request.setEntity(entity);
+        request.addHeader(new BasicHeader(CONTENT_TYPE,
+            CONTENT_TYPE_APPLICATION_JSON));
+        request.setEntity(new StringEntity(json.toString()));
 
         Expect expect = new Expect().withHeader(name, value).withJSON(json);
 
@@ -65,10 +62,9 @@ public class ExpectTests
 
         BasicHttpEntityEnclosingRequest request =
             new BasicHttpEntityEnclosingRequest("POST", "http://127.0.0.1");
-
-        StringEntity entity = new StringEntity(json2.toString());
-        entity.setContentType(CONTENT_TYPE_APPLICATION_JSON);
-        request.setEntity(entity);
+        request.addHeader(new BasicHeader(CONTENT_TYPE,
+            CONTENT_TYPE_APPLICATION_JSON));
+        request.setEntity(new StringEntity(json2.toString()));
 
         Expect expect = new Expect().withJSON(json1);
 

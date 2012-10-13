@@ -9,6 +9,7 @@ import org.apache.http.HttpException;
 import org.apache.http.HttpStatus;
 import org.apache.http.ProtocolVersion;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicHttpEntityEnclosingRequest;
 import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.protocol.BasicHttpContext;
@@ -40,9 +41,9 @@ public class ExpectHttpRequestHandlerTests
 
         BasicHttpEntityEnclosingRequest request =
             new BasicHttpEntityEnclosingRequest("POST", "http://127.0.0.1");
-        StringEntity entity = new StringEntity(json1.toString());
-        entity.setContentType(CONTENT_TYPE_APPLICATION_JSON);
-        request.setEntity(entity);
+        request.addHeader(new BasicHeader(CONTENT_TYPE,
+            CONTENT_TYPE_APPLICATION_JSON));
+        request.setEntity(new StringEntity(json1.toString()));
 
         BasicHttpResponse response =
             new BasicHttpResponse(new ProtocolVersion("HTTP", 1, 1),

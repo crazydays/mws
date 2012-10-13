@@ -10,6 +10,7 @@ import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpRequestHandler;
+
 import org.crazydays.mws.expect.Expect;
 import org.crazydays.mws.respond.Respond;
 
@@ -30,6 +31,8 @@ public class ExpectHttpRequestHandler
         HttpContext context)
         throws HttpException, IOException
     {
+        // Log.i(getClass().getSimpleName(), HttpHelpers.toString(request));
+
         for (int i = 0; i < expects.size(); i++) {
             if (expects.get(i).matches(request)) {
                 responds.get(i).respond(response);

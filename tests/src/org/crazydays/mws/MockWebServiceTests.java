@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import junit.framework.AssertionFailedError;
-
 import android.test.AndroidTestCase;
 
 import org.apache.http.HttpResponse;
@@ -21,8 +19,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
-import org.crazydays.mws.expect.JSONExpectation;
+import org.crazydays.mws.expect.Expect;
 import org.crazydays.mws.json.JSONUtils;
+import org.crazydays.mws.respond.Respond;
+import static org.crazydays.mws.http.HttpConstants.*;
 
 public class MockWebServiceTests
     extends AndroidTestCase
@@ -49,20 +49,33 @@ public class MockWebServiceTests
         super.tearDown();
     }
 
-    public void testIntegration_success()
+    private URI buildUri(String context)
+    {
+        try {
+            return new URI("http", null, "127.0.0.1", PORT, context, null, null);
+        } catch (URISyntaxException e) {
+            fail("Unable to build URI: " + e.getMessage());
+            return null;
+        }
+    }
+
+    // Expect and Respond API
+    public void testExpectAndRespondIntegration_matches()
         throws JSONException, ClientProtocolException, IOException
     {
+        String path = "/foo/bar";
         JSONObject expect = new JSONObject().put("one", "two");
         JSONObject respond = new JSONObject().put("abc", "zyx");
 
-        service.expect("/foo/bar", new JSONExpectation(expect, respond));
+        service.expectAndRespond(path, new Expect().withJSON(expect),
+            new Respond().withJSON(respond));
         service.replay();
 
-        StringEntity entity = new StringEntity(expect.toString(), "UTF-8");
-        entity.setContentType("application/json");
+        StringEntity entity = new StringEntity(expect.toString());
+        entity.setContentType(CONTENT_TYPE_APPLICATION_JSON);
 
         HttpPost post = new HttpPost();
-        post.setURI(buildUri("/foo/bar"));
+        post.setURI(buildUri(path));
         post.setEntity(entity);
 
         HttpResponse response = client.execute(post);
@@ -72,47 +85,5 @@ public class MockWebServiceTests
                 .getEntity())).nextValue()));
 
         service.verify();
-    }
-
-    public void testIntegration_failure()
-        throws JSONException, ClientProtocolException, IOException
-    {
-        JSONObject actual = new JSONObject().put("not", "here");
-        JSONObject expect = new JSONObject().put("one", "two");
-        JSONObject respond = new JSONObject().put("abc", "zyx");
-
-        service.expect("/foo/bar", new JSONExpectation(expect, respond));
-        service.replay();
-
-        StringEntity entity = new StringEntity(actual.toString(), "UTF-8");
-        entity.setContentType("application/json");
-
-        HttpPost post = new HttpPost();
-        post.setURI(buildUri("/foo/bar"));
-        post.setEntity(entity);
-
-        HttpResponse response = client.execute(post);
-        String data = EntityUtils.toString(response.getEntity());
-
-        boolean failed = false;
-        try {
-            service.verify();
-            failed = true;
-        } catch (AssertionFailedError e) {
-            // expected
-        }
-        if (failed) {
-            fail("Expected verify to fail");
-        }
-    }
-
-    private URI buildUri(String context)
-    {
-        try {
-            return new URI("http", null, "127.0.0.1", PORT, context, null, null);
-        } catch (URISyntaxException e) {
-            fail("Unable to build URI: " + e.getMessage());
-            return null;
-        }
     }
 }

@@ -6,17 +6,17 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import junit.framework.AssertionFailedError;
-
-import org.crazydays.mws.expect.Expectation;
-import org.crazydays.mws.handler.ExpectationHttpRequestHandler;
+import org.crazydays.mws.expect.Expect;
+import org.crazydays.mws.handler.ExpectHttpRequestHandler;
 import org.crazydays.mws.http.WebServer;
+import org.crazydays.mws.respond.Respond;
 
 public class MockWebService
 {
     private WebServer server;
-    private List<Expectation> expectations;
-    private Map<String, ExpectationHttpRequestHandler> handlers;
+
+    private List<Expect> expects;
+    private Map<String, ExpectHttpRequestHandler> handlers;
 
     /**
      * MockWebService constructor.
@@ -26,20 +26,42 @@ public class MockWebService
     public MockWebService(int port)
     {
         server = new WebServer(port);
-        expectations = new LinkedList<Expectation>();
-        handlers = new HashMap<String, ExpectationHttpRequestHandler>();
+        expects = new LinkedList<Expect>();
+        handlers = new HashMap<String, ExpectHttpRequestHandler>();
     }
 
     /**
-     * Add expectation.
+     * Add expect and respond for specified path.
      * 
-     * @param path Expectation path mapping
-     * @param expectation Expectation
+     * @param path Path
+     * @param expect Expect
+     * @param respond Respond
      */
-    public void expect(String path, Expectation expectation)
+    public void expectAndRespond(String path, Expect expect, Respond respond)
     {
-        addExpectation(expectation);
-        addHandler(path, expectation);
+        addExpect(expect);
+        addExpectAndRespondToHandler(path, expect, respond);
+    }
+
+    private void addExpect(Expect expect)
+    {
+        expects.add(expect);
+    }
+
+    private void addExpectAndRespondToHandler(String path, Expect expect,
+        Respond respond)
+    {
+        ExpectHttpRequestHandler handler = getHandler(path);
+        handler.expectAndRespond(expect, respond);
+    }
+
+    private ExpectHttpRequestHandler getHandler(String path)
+    {
+        if (!handlers.containsKey(path)) {
+            handlers.put(path, new ExpectHttpRequestHandler());
+        }
+
+        return handlers.get(path);
     }
 
     /**
@@ -53,29 +75,13 @@ public class MockWebService
         server.start();
     }
 
-    private void addExpectation(Expectation expectation)
-    {
-        expectations.add(expectation);
-    }
-
-    private void addHandler(String path, Expectation expectation)
-    {
-        if (!handlers.containsKey(path)) {
-            handlers.put(path, new ExpectationHttpRequestHandler());
-        }
-
-        handlers.get(path).expect(expectation);
-    }
-
     /**
      * Verify all expectations were met.
      */
     public void verify()
     {
-        for (Expectation expectation : expectations) {
-            if (!expectation.didMatch()) {
-                throw new AssertionFailedError("Expectation unmatched");
-            }
+        for (Expect expect : expects) {
+            expect.verify();
         }
     }
 
