@@ -21,5 +21,5 @@ Assert that all the set expectations were actually met.
 Example
 =======
 
-An example which shows the intended layout of the expect, replay, and verify 
-pattern. [link](https://github.com/crazydays/mws/blob/master/tests/src/org/crazydays/mws/MockWebServiceTests.java)
+An [example](https://github.com/crazydays/mws/blob/master/tests/src/org/crazydays/mws/MockWebServiceTests.java)
+which shows the intended layout of the expect, replay, and verify pattern.
