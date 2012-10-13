@@ -27,7 +27,7 @@ import static org.crazydays.mws.http.HttpConstants.*;
 public class ExpectHttpRequestHandlerTests
     extends AndroidTestCase
 {
-    public void testHandleMatch()
+    public void testHandle_match()
         throws HttpException, IOException, JSONException
     {
         JSONObject json1 = new JSONObject().put("abc", "xyz");
@@ -55,5 +55,33 @@ public class ExpectHttpRequestHandlerTests
             json2,
             (JSONObject) new JSONTokener(EntityUtils.toString(response
                 .getEntity())).nextValue()));
+    }
+
+    public void testHandle_no_match()
+        throws HttpException, IOException, JSONException
+    {
+        JSONObject json1 = new JSONObject().put("abc", "xyz");
+        JSONObject json2 = new JSONObject().put("foo", "bar");
+        JSONObject json3 = new JSONObject().put("baz", "123");
+
+        Expect expect = new Expect().withJSON(json1);
+        Respond respond = new Respond().withJSON(json2);
+
+        ExpectHttpRequestHandler handler = new ExpectHttpRequestHandler();
+        handler.expectAndRespond(expect, respond);
+
+        BasicHttpEntityEnclosingRequest request =
+            new BasicHttpEntityEnclosingRequest("POST", "http://127.0.0.1");
+        request.addHeader(new BasicHeader(CONTENT_TYPE,
+            CONTENT_TYPE_APPLICATION_JSON));
+        request.setEntity(new StringEntity(json3.toString()));
+
+        BasicHttpResponse response =
+            new BasicHttpResponse(new ProtocolVersion("HTTP", 1, 1),
+                HttpStatus.SC_OK, null);
+
+        handler.handle(request, response, new BasicHttpContext());
+
+        assertNull("response", response.getEntity());
     }
 }
