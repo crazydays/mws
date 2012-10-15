@@ -12,6 +12,8 @@ import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpRequestHandler;
 
 import org.crazydays.mws.expect.Expect;
+import org.crazydays.mws.http.CachedHttpRequestFacade;
+import org.crazydays.mws.http.HttpRequestFacade;
 import org.crazydays.mws.respond.Respond;
 
 public class ExpectHttpRequestHandler
@@ -33,8 +35,10 @@ public class ExpectHttpRequestHandler
     {
         // Log.i(getClass().getSimpleName(), HttpHelpers.toString(request));
 
+        HttpRequestFacade facade = new CachedHttpRequestFacade(request);
+
         for (int i = 0; i < expects.size(); i++) {
-            if (expects.get(i).matches(request)) {
+            if (expects.get(i).matches(facade)) {
                 responds.get(i).respond(response);
                 return;
             }

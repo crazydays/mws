@@ -8,19 +8,17 @@ import java.util.List;
 import android.util.Log;
 
 import org.apache.http.Header;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpRequest;
-import org.apache.http.ParseException;
 import org.apache.http.message.BasicHeader;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 
 import junit.framework.AssertionFailedError;
 
+import org.crazydays.mws.http.HttpRequestFacade;
 import org.crazydays.mws.json.JSONUtils;
 import static org.crazydays.mws.http.HttpConstants.*;
-import static org.crazydays.mws.http.HttpHelpers.*;
 
 public class Expect
 {
@@ -46,7 +44,7 @@ public class Expect
         return this;
     }
 
-    public boolean matches(HttpRequest request)
+    public boolean matches(HttpRequestFacade request)
         throws IOException
     {
         if (!matchesHeaders(request)) {
@@ -66,16 +64,18 @@ public class Expect
         }
     }
 
-    private boolean matchesHeaders(HttpRequest request)
+    private boolean matchesHeaders(HttpRequestFacade request)
     {
         for (Header matcher : headers) {
-            if (request.containsHeader(matcher.getName())) {
-                for (Header actual : request.getHeaders(matcher.getName())) {
-                    if (!matchesHeader(matcher, actual)) {
-                        return false;
-                    }
+            boolean matched = false;
+
+            for (String value : request.getHeaders(matcher.getName())) {
+                if (matcher.getValue().equals(value)) {
+                    matched = true;
                 }
-            } else {
+            }
+
+            if (!matched) {
                 return false;
             }
         }
@@ -83,51 +83,48 @@ public class Expect
         return true;
     }
 
-    private boolean matchesHeader(Header matcher, Header actual)
-    {
-        return actual.getName().equals(matcher.getName())
-            && actual.getValue().equals(matcher.getValue());
-    }
-
     private boolean isJSON()
     {
         return json != null;
     }
 
-    private boolean matchesJSON(HttpRequest request)
+    private boolean matchesJSON(HttpRequestFacade request)
         throws IOException
     {
         if (!isContentTypeJSON(request)) {
             return false;
         }
 
-        if (!isEntityEnclosingRequest(request)) {
+        if (!request.hasEntityContent()) {
             return false;
         }
 
-        HttpEntity entity = extractEntity(request);
+        String content = request.getEntityContent();
 
         try {
-            return JSONUtils.equals(extractEntityJSON(entity), json);
-        } catch (ParseException e) {
-            Log.w(getClass().getSimpleName(), e.getMessage());
-            return false;
+            return JSONUtils.equals(buildJSON(content), json);
         } catch (JSONException e) {
             Log.w(getClass().getSimpleName(), e.getMessage());
             return false;
         }
     }
 
-    private boolean isContentTypeJSON(HttpRequest request)
+    private boolean isContentTypeJSON(HttpRequestFacade request)
     {
-        Header[] headers = request.getHeaders(CONTENT_TYPE);
-        for (int i = 0; i < headers.length; i++) {
-            if (headers[i].getValue().equals(CONTENT_TYPE_APPLICATION_JSON)) {
+        List<String> values = request.getHeaders(CONTENT_TYPE);
+        for (String value : values) {
+            if (value.equals(CONTENT_TYPE_APPLICATION_JSON)) {
                 return true;
             }
         }
 
         return false;
+    }
+
+    private JSONObject buildJSON(String content)
+        throws JSONException
+    {
+        return (JSONObject) new JSONTokener(content).nextValue();
     }
 
     public int getCount()

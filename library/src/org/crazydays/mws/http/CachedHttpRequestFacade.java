@@ -18,6 +18,7 @@ public class CachedHttpRequestFacade
     implements HttpRequestFacade
 {
     private HttpRequest request;
+    private List<String> headerKeys;
     private Map<String, List<String>> cachedHeaders =
         new HashMap<String, List<String>>();
     private String entityContent;
@@ -25,6 +26,32 @@ public class CachedHttpRequestFacade
     public CachedHttpRequestFacade(HttpRequest request)
     {
         this.request = request;
+    }
+
+    @Override
+    public List<String> getHeaderKeys()
+    {
+        return doCacheHeaderKeys();
+    }
+
+    private List<String> doCacheHeaderKeys()
+    {
+        if (isCachedHeaderKeys()) {
+            return headerKeys;
+        }
+
+        headerKeys = new LinkedList<String>();
+
+        for (Header header : request.getAllHeaders()) {
+            headerKeys.add(header.getName());
+        }
+
+        return doCacheHeaderKeys();
+    }
+
+    private boolean isCachedHeaderKeys()
+    {
+        return headerKeys != null;
     }
 
     @Override

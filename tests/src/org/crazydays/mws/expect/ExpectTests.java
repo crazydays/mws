@@ -12,6 +12,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicHttpEntityEnclosingRequest;
 import org.apache.http.message.BasicHttpRequest;
+import org.crazydays.mws.http.CachedHttpRequestFacade;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,7 +35,8 @@ public class ExpectTests
 
         Expect expect = new Expect().withJSON(json);
 
-        assertTrue("!matched", expect.matches(request));
+        assertTrue("!matched",
+            expect.matches(new CachedHttpRequestFacade(request)));
     }
 
     public void testWithJSON_no_json_header()
@@ -48,7 +50,8 @@ public class ExpectTests
 
         Expect expect = new Expect().withJSON(json);
 
-        assertFalse("matched", expect.matches(request));
+        assertFalse("matched",
+            expect.matches(new CachedHttpRequestFacade(request)));
     }
 
     public void testWithJSON_text_plain_header()
@@ -63,7 +66,8 @@ public class ExpectTests
 
         Expect expect = new Expect().withJSON(json);
 
-        assertFalse("matched", expect.matches(request));
+        assertFalse("matched",
+            expect.matches(new CachedHttpRequestFacade(request)));
     }
 
     public void testWithJSON_not_entity_enclosing_request()
@@ -77,7 +81,8 @@ public class ExpectTests
 
         Expect expect = new Expect().withJSON(json);
 
-        assertFalse("matched", expect.matches(request));
+        assertFalse("matched",
+            expect.matches(new CachedHttpRequestFacade(request)));
     }
 
     public void testWithJSON_invalid_json()
@@ -93,7 +98,8 @@ public class ExpectTests
 
         Expect expect = new Expect().withJSON(json);
 
-        assertFalse("matched", expect.matches(request));
+        assertFalse("matched",
+            expect.matches(new CachedHttpRequestFacade(request)));
     }
 
     public void testWithJSON_withHeader()
@@ -112,7 +118,8 @@ public class ExpectTests
 
         Expect expect = new Expect().withHeader(name, value).withJSON(json);
 
-        assertTrue("!matched", expect.matches(request));
+        assertTrue("!matched",
+            expect.matches(new CachedHttpRequestFacade(request)));
     }
 
     public void testWithJSON_not_same()
@@ -129,7 +136,8 @@ public class ExpectTests
 
         Expect expect = new Expect().withJSON(json1);
 
-        assertFalse("matched", expect.matches(request));
+        assertFalse("matched",
+            expect.matches(new CachedHttpRequestFacade(request)));
     }
 
     public void testWithHeader()
@@ -145,7 +153,8 @@ public class ExpectTests
 
         Expect expect = new Expect().withHeader(name, value);
 
-        assertTrue("!matched", expect.matches(request));
+        assertTrue("!matched",
+            expect.matches(new CachedHttpRequestFacade(request)));
     }
 
     public void testWithHeader_missing_one()
@@ -164,7 +173,8 @@ public class ExpectTests
         Expect expect =
             new Expect().withHeader(name1, value1).withHeader(name2, value2);
 
-        assertFalse("matched", expect.matches(request));
+        assertFalse("matched",
+            expect.matches(new CachedHttpRequestFacade(request)));
     }
 
     public void testWithHeader_wrong_value()
@@ -180,7 +190,8 @@ public class ExpectTests
 
         Expect expect = new Expect().withHeader(name1, value2);
 
-        assertFalse("matched", expect.matches(request));
+        assertFalse("matched",
+            expect.matches(new CachedHttpRequestFacade(request)));
     }
 
     public void testWithHeader_extra_one()
@@ -199,7 +210,8 @@ public class ExpectTests
 
         Expect expect = new Expect().withHeader(name1, value1);
 
-        assertTrue("!matched", expect.matches(request));
+        assertTrue("!matched",
+            expect.matches(new CachedHttpRequestFacade(request)));
     }
 
     public void testCount_none()
@@ -222,7 +234,7 @@ public class ExpectTests
 
         Expect expect = new Expect().withHeader(name1, value1);
 
-        expect.matches(request);
+        expect.matches(new CachedHttpRequestFacade(request));
 
         assertEquals("count", 1, expect.getCount());
     }
@@ -240,8 +252,8 @@ public class ExpectTests
 
         Expect expect = new Expect().withHeader(name, value);
 
-        expect.matches(request);
-        expect.matches(request);
+        expect.matches(new CachedHttpRequestFacade(request));
+        expect.matches(new CachedHttpRequestFacade(request));
 
         assertEquals("count", 2, expect.getCount());
     }
@@ -270,7 +282,7 @@ public class ExpectTests
         request.addHeader(new BasicHeader(name, value));
 
         Expect expect = new Expect().withHeader(name, value);
-        expect.matches(request);
+        expect.matches(new CachedHttpRequestFacade(request));
 
         try {
             expect.verify();
@@ -291,8 +303,8 @@ public class ExpectTests
         request.addHeader(new BasicHeader(name, value));
 
         Expect expect = new Expect().withHeader(name, value);
-        expect.matches(request);
-        expect.matches(request);
+        expect.matches(new CachedHttpRequestFacade(request));
+        expect.matches(new CachedHttpRequestFacade(request));
 
         try {
             expect.verify();
@@ -314,7 +326,7 @@ public class ExpectTests
         request.addHeader(new BasicHeader(name, value));
 
         Expect expect = new Expect().withHeader(name, value).times(2);
-        expect.matches(request);
+        expect.matches(new CachedHttpRequestFacade(request));
 
         try {
             expect.verify();
@@ -336,8 +348,8 @@ public class ExpectTests
         request.addHeader(new BasicHeader(name, value));
 
         Expect expect = new Expect().withHeader(name, value).times(2);
-        expect.matches(request);
-        expect.matches(request);
+        expect.matches(new CachedHttpRequestFacade(request));
+        expect.matches(new CachedHttpRequestFacade(request));
 
         try {
             expect.verify();
@@ -371,7 +383,7 @@ public class ExpectTests
         request.addHeader(new BasicHeader(name, value));
 
         Expect expect = new Expect().withHeader(name, value).anyTimes();
-        expect.matches(request);
+        expect.matches(new CachedHttpRequestFacade(request));
 
         try {
             expect.verify();
@@ -392,8 +404,8 @@ public class ExpectTests
         request.addHeader(new BasicHeader(name, value));
 
         Expect expect = new Expect().withHeader(name, value).anyTimes();
-        expect.matches(request);
-        expect.matches(request);
+        expect.matches(new CachedHttpRequestFacade(request));
+        expect.matches(new CachedHttpRequestFacade(request));
 
         try {
             expect.verify();
@@ -427,7 +439,7 @@ public class ExpectTests
         request.addHeader(new BasicHeader(name, value));
 
         Expect expect = new Expect().withHeader(name, value).atleastOnce();
-        expect.matches(request);
+        expect.matches(new CachedHttpRequestFacade(request));
 
         try {
             expect.verify();
@@ -448,8 +460,8 @@ public class ExpectTests
         request.addHeader(new BasicHeader(name, value));
 
         Expect expect = new Expect().withHeader(name, value).atleastOnce();
-        expect.matches(request);
-        expect.matches(request);
+        expect.matches(new CachedHttpRequestFacade(request));
+        expect.matches(new CachedHttpRequestFacade(request));
 
         try {
             expect.verify();

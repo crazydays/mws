@@ -16,6 +16,62 @@ import org.apache.http.message.BasicHttpRequest;
 public class CachedHttpRequestFacadeTests
     extends AndroidTestCase
 {
+    public void testGetHeaderKeys_none()
+    {
+        BasicHttpEntityEnclosingRequest request =
+            new BasicHttpEntityEnclosingRequest("POST", "http://127.0.0.1");
+
+        CachedHttpRequestFacade facade = new CachedHttpRequestFacade(request);
+
+        List<String> keys = facade.getHeaderKeys();
+
+        assertEquals("size", 0, keys.size());
+    }
+
+    public void testGetHeaderKeys_one()
+    {
+        String name = "X-Random-Header";
+        String value = "AValue";
+
+        BasicHttpEntityEnclosingRequest request =
+            new BasicHttpEntityEnclosingRequest("POST", "http://127.0.0.1");
+        request.addHeader(name, value);
+
+        CachedHttpRequestFacade facade = new CachedHttpRequestFacade(request);
+
+        List<String> keys = facade.getHeaderKeys();
+
+        assertEquals("size", 1, keys.size());
+        assertEquals("name", name, keys.get(0));
+    }
+
+    public void testGetHeaderKeys_two()
+    {
+        String name1 = "X-Random-Header";
+        String value1 = "AValue";
+        String name2 = "X-Another-Header";
+        String value2 = "BValue";
+
+        BasicHttpEntityEnclosingRequest request =
+            new BasicHttpEntityEnclosingRequest("POST", "http://127.0.0.1");
+        request.addHeader(name1, value1);
+        request.addHeader(name2, value2);
+
+        CachedHttpRequestFacade facade = new CachedHttpRequestFacade(request);
+
+        List<String> keys = facade.getHeaderKeys();
+
+        assertEquals("size", 2, keys.size());
+        for (String key : keys) {
+            if (key.equals(name1) || key.equals(name2)) {
+                continue;
+            } else {
+                fail("Unknown header key: " + key);
+            }
+
+        }
+    }
+
     public void testGetHeader_none()
     {
         String name = "X-Random-Header";
