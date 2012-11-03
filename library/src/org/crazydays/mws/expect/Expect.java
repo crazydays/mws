@@ -8,6 +8,13 @@ import java.util.List;
 import android.util.Log;
 
 import org.apache.http.Header;
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpHead;
+import org.apache.http.client.methods.HttpOptions;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpTrace;
 import org.apache.http.message.BasicHeader;
 
 import org.json.JSONException;
@@ -26,11 +33,54 @@ public class Expect
     private final static int ANY_TIMES = -1;
     private final static int ATLEAST_ONCE_TIMES = -2;
 
+    private String method;
     private List<Header> headers = new LinkedList<Header>();
     private JSONObject json;
 
     private int times = DEFAULT_TIMES;
     private int count;
+
+    public Expect asGet()
+    {
+        method = HttpGet.METHOD_NAME;
+        return this;
+    }
+
+    public Expect asPost()
+    {
+        method = HttpPost.METHOD_NAME;
+        return this;
+    }
+
+    public Expect asPut()
+    {
+        method = HttpPut.METHOD_NAME;
+        return this;
+    }
+
+    public Expect asDelete()
+    {
+        method = HttpDelete.METHOD_NAME;
+        return this;
+    }
+
+    public Expect asHead()
+    {
+        method = HttpHead.METHOD_NAME;
+        return this;
+    }
+
+    public Expect asOptions()
+    {
+        method = HttpOptions.METHOD_NAME;
+        return this;
+    }
+
+    public Expect asTrace()
+    {
+        method = HttpTrace.METHOD_NAME;
+        return this;
+    }
 
     public Expect withHeader(String name, String value)
     {
@@ -47,6 +97,10 @@ public class Expect
     public boolean matches(HttpRequestFacade request)
         throws IOException
     {
+        if (!matchesMethod(request)) {
+            return false;
+        }
+
         if (!matchesHeaders(request)) {
             return false;
         }
@@ -61,6 +115,15 @@ public class Expect
         } else {
             count++;
             return true;
+        }
+    }
+
+    private boolean matchesMethod(HttpRequestFacade request)
+    {
+        if (method == null) {
+            return true;
+        } else {
+            return method.equals(request.getMethod());
         }
     }
 

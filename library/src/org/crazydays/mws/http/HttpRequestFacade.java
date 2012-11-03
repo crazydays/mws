@@ -8,6 +8,8 @@ import org.apache.http.ParseException;
 
 public interface HttpRequestFacade
 {
+    public String getMethod();
+
     public List<String> getHeaderKeys();
 
     public List<String> getHeaders(String name);

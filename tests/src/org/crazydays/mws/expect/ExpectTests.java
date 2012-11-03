@@ -8,6 +8,13 @@ import android.test.AndroidTestCase;
 import junit.framework.AssertionFailedError;
 
 import org.apache.http.HttpRequest;
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpHead;
+import org.apache.http.client.methods.HttpOptions;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpTrace;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicHttpEntityEnclosingRequest;
@@ -22,6 +29,160 @@ import static org.crazydays.mws.http.HttpConstants.*;
 public class ExpectTests
     extends AndroidTestCase
 {
+    public void testAsGet_post()
+        throws IOException
+    {
+        HttpRequest request = new HttpPost();
+
+        Expect expect = new Expect().asGet();
+
+        assertFalse("matched",
+            expect.matches(new CachedHttpRequestFacade(request)));
+    }
+
+    public void testAsGet_get()
+        throws IOException
+    {
+        HttpRequest request = new HttpGet();
+
+        Expect expect = new Expect().asGet();
+
+        assertTrue("!matched",
+            expect.matches(new CachedHttpRequestFacade(request)));
+    }
+
+    public void testAsPost_post()
+        throws IOException
+    {
+        HttpRequest request = new HttpPost();
+
+        Expect expect = new Expect().asPost();
+
+        assertTrue("!matched",
+            expect.matches(new CachedHttpRequestFacade(request)));
+    }
+
+    public void testAsPost_get()
+        throws IOException
+    {
+        HttpRequest request = new HttpGet();
+
+        Expect expect = new Expect().asPost();
+
+        assertFalse("matched",
+            expect.matches(new CachedHttpRequestFacade(request)));
+    }
+
+    public void testAsPut_put()
+        throws IOException
+    {
+        HttpRequest request = new HttpPut();
+
+        Expect expect = new Expect().asPut();
+
+        assertTrue("!matched",
+            expect.matches(new CachedHttpRequestFacade(request)));
+    }
+
+    public void testAsPut_get()
+        throws IOException
+    {
+        HttpRequest request = new HttpGet();
+
+        Expect expect = new Expect().asPut();
+
+        assertFalse("matched",
+            expect.matches(new CachedHttpRequestFacade(request)));
+    }
+
+    public void testAsDelete_delete()
+        throws IOException
+    {
+        HttpRequest request = new HttpDelete();
+
+        Expect expect = new Expect().asDelete();
+
+        assertTrue("!matched",
+            expect.matches(new CachedHttpRequestFacade(request)));
+    }
+
+    public void testAsDelete_get()
+        throws IOException
+    {
+        HttpRequest request = new HttpGet();
+
+        Expect expect = new Expect().asDelete();
+
+        assertFalse("matched",
+            expect.matches(new CachedHttpRequestFacade(request)));
+    }
+
+    public void testAsHead_head()
+        throws IOException
+    {
+        HttpRequest request = new HttpHead();
+
+        Expect expect = new Expect().asHead();
+
+        assertTrue("!matched",
+            expect.matches(new CachedHttpRequestFacade(request)));
+    }
+
+    public void testAsHead_get()
+        throws IOException
+    {
+        HttpRequest request = new HttpGet();
+
+        Expect expect = new Expect().asHead();
+
+        assertFalse("matched",
+            expect.matches(new CachedHttpRequestFacade(request)));
+    }
+
+    public void testAsOptions_options()
+        throws IOException
+    {
+        HttpRequest request = new HttpOptions();
+
+        Expect expect = new Expect().asOptions();
+
+        assertTrue("!matched",
+            expect.matches(new CachedHttpRequestFacade(request)));
+    }
+
+    public void testAsOptions_get()
+        throws IOException
+    {
+        HttpRequest request = new HttpGet();
+
+        Expect expect = new Expect().asOptions();
+
+        assertFalse("matched",
+            expect.matches(new CachedHttpRequestFacade(request)));
+    }
+
+    public void testAsTrace_trace()
+        throws IOException
+    {
+        HttpRequest request = new HttpTrace();
+
+        Expect expect = new Expect().asTrace();
+
+        assertTrue("!matched",
+            expect.matches(new CachedHttpRequestFacade(request)));
+    }
+
+    public void testAsTrace_get()
+        throws IOException
+    {
+        HttpRequest request = new HttpGet();
+
+        Expect expect = new Expect().asTrace();
+
+        assertFalse("matched",
+            expect.matches(new CachedHttpRequestFacade(request)));
+    }
+
     public void testWithJSON()
         throws JSONException, IOException
     {

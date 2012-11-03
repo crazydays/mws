@@ -29,6 +29,12 @@ public class CachedHttpRequestFacade
     }
 
     @Override
+    public String getMethod()
+    {
+        return request.getRequestLine().getMethod();
+    }
+
+    @Override
     public List<String> getHeaderKeys()
     {
         return doCacheHeaderKeys();

@@ -67,7 +67,7 @@ public class MockWebServiceTests
         JSONObject expect = new JSONObject().put("one", "two");
         JSONObject respond = new JSONObject().put("abc", "zyx");
 
-        service.expectAndRespond(path, new Expect().withJSON(expect),
+        service.expectAndRespond(path, new Expect().asPost().withJSON(expect),
             new Respond().withJSON(respond));
         service.replay();
 

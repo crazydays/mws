@@ -7,7 +7,10 @@ import java.util.List;
 
 import android.test.AndroidTestCase;
 
+import org.apache.http.HttpRequest;
 import org.apache.http.ParseException;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicHttpEntityEnclosingRequest;
@@ -16,6 +19,24 @@ import org.apache.http.message.BasicHttpRequest;
 public class CachedHttpRequestFacadeTests
     extends AndroidTestCase
 {
+    public void testGetMethod_GET()
+    {
+        HttpRequest request = new HttpGet();
+
+        CachedHttpRequestFacade facade = new CachedHttpRequestFacade(request);
+
+        assertEquals("!GET", "GET", facade.getMethod());
+    }
+
+    public void testGetMethod_POST()
+    {
+        HttpRequest request = new HttpPost();
+
+        CachedHttpRequestFacade facade = new CachedHttpRequestFacade(request);
+
+        assertEquals("!POST", "POST", facade.getMethod());
+    }
+
     public void testGetHeaderKeys_none()
     {
         BasicHttpEntityEnclosingRequest request =
