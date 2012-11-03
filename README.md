@@ -35,7 +35,8 @@ Usage
 MWS can be be used in two ways, either as a library project in the Android test
 project or as a library jar.
 
-* Library Project
+Library Project
+---------------
 
 It can be included into an Android test project by adding the dependency in the
 test project which will require MWS to be checked out directly from git.
@@ -44,7 +45,8 @@ test project which will require MWS to be checked out directly from git.
 - Import the `mws/library` project into eclipse
 - Add the project as a library to the desired test project
 
-* Jar
+Jar
+---
 
 MWS can also be built as a jar and that jar can be included test project libs directory
 and included into the eclipse build path.
