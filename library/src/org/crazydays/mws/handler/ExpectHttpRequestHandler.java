@@ -33,8 +33,6 @@ public class ExpectHttpRequestHandler
         HttpContext context)
         throws HttpException, IOException
     {
-        // Log.i(getClass().getSimpleName(), HttpHelpers.toString(request));
-
         HttpRequestFacade facade = new CachedHttpRequestFacade(request);
 
         for (int i = 0; i < expects.size(); i++) {
