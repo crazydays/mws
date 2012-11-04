@@ -7,7 +7,9 @@ import java.net.URISyntaxException;
 
 import android.test.AndroidTestCase;
 
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
@@ -63,12 +65,21 @@ public class MockWebServiceTests
     public void testExpectAndRespondIntegration_matches()
         throws JSONException, ClientProtocolException, IOException
     {
+        String eHeader = "X-Expect-Header";
+        String eValue = "eValue";
+
+        String rHeader = "X-Response-Header";
+        String rValue = "rValue";
+
         String path = "/foo/bar";
         JSONObject expect = new JSONObject().put("one", "two");
         JSONObject respond = new JSONObject().put("abc", "zyx");
 
-        service.expectAndRespond(path, new Expect().asPost().withJSON(expect),
-            new Respond().withJSON(respond));
+        service.expectAndRespond(
+            path,
+            new Expect().asPost().withHeader(eHeader, eValue).withJSON(expect),
+            new Respond().withStatusCode(HttpStatus.SC_OK)
+                .withHeader(rHeader, rValue).withJSON(respond));
         service.replay();
 
         StringEntity entity = new StringEntity(expect.toString());
@@ -76,9 +87,14 @@ public class MockWebServiceTests
 
         HttpPost post = new HttpPost();
         post.setURI(buildUri(path));
+        post.addHeader(eHeader, eValue);
         post.setEntity(entity);
 
         HttpResponse response = client.execute(post);
+        assertEquals("ok", HttpStatus.SC_OK, response.getStatusLine()
+            .getStatusCode());
+        Header[] headers = response.getHeaders(rHeader);
+        assertEquals("value", rValue, headers[0].getValue());
         assertTrue("response", JSONUtils.equals(
             respond,
             (JSONObject) new JSONTokener(EntityUtils.toString(response

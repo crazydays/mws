@@ -23,6 +23,21 @@ import static org.crazydays.mws.http.HttpConstants.*;
 public class RespondTests
     extends AndroidTestCase
 {
+    public void testWithStatus_200()
+        throws IOException
+    {
+        Respond respond = new Respond().withStatusCode(HttpStatus.SC_NOT_FOUND);
+
+        BasicHttpResponse response =
+            new BasicHttpResponse(new ProtocolVersion("HTTP", 1, 1),
+                HttpStatus.SC_OK, null);
+
+        respond.respond(response);
+
+        assertEquals("!404", HttpStatus.SC_NOT_FOUND, response.getStatusLine()
+            .getStatusCode());
+    }
+
     public void testWithJSON()
         throws JSONException, IOException
     {
@@ -56,12 +71,17 @@ public class RespondTests
 
         respond.respond(response);
 
+        int count = 0;
+
         for (Header header : response.getAllHeaders()) {
             if (header.getName().equals(name)) {
                 assertEquals("value", value, header.getValue());
+                count++;
             } else {
                 fail("Unexpected header: " + header.toString());
             }
         }
+
+        assertEquals("count", 1, count);
     }
 }

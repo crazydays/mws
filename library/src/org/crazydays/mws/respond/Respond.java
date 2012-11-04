@@ -17,13 +17,15 @@ import static org.crazydays.mws.http.HttpConstants.*;
 
 public class Respond
 {
+    private int statusCode;
+
     private List<Header> headers = new LinkedList<Header>();
 
     private JSONObject json;
 
-    public Respond withJSON(JSONObject json)
+    public Respond withStatusCode(int statusCode)
     {
-        this.json = json;
+        this.statusCode = statusCode;
         return this;
     }
 
@@ -33,10 +35,32 @@ public class Respond
         return this;
     }
 
+    public Respond withJSON(JSONObject json)
+    {
+        this.json = json;
+        return this;
+    }
+
     public void respond(HttpResponse response)
         throws IOException
     {
+        respondWithStatusCode(response);
+        respondWithHeaders(response);
         respondWithEntity(response);
+    }
+
+    private void respondWithStatusCode(HttpResponse response)
+    {
+        if (statusCode != 0) {
+            response.setStatusCode(statusCode);
+        }
+    }
+
+    private void respondWithHeaders(HttpResponse response)
+    {
+        for (Header header : headers) {
+            response.addHeader(header);
+        }
     }
 
     private void respondWithEntity(HttpResponse response)
