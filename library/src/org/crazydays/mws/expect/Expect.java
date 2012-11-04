@@ -34,7 +34,7 @@ public class Expect
     private final static int ATLEAST_ONCE_TIMES = -2;
 
     private String method;
-    private List<Header> headers = new LinkedList<Header>();
+    private final List<Header> headers = new LinkedList<Header>();
     private JSONObject json;
 
     private int times = DEFAULT_TIMES;

@@ -9,8 +9,12 @@ import org.apache.http.HttpRequest;
 import org.apache.http.ParseException;
 import org.apache.http.util.EntityUtils;
 
-public class HttpHelpers
+public final class HttpHelpers
 {
+    private HttpHelpers()
+    {
+    }
+
     public static boolean isEntityEnclosingRequest(HttpRequest request)
     {
         return request instanceof HttpEntityEnclosingRequest;

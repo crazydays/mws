@@ -19,7 +19,7 @@ public class Respond
 {
     private int statusCode;
 
-    private List<Header> headers = new LinkedList<Header>();
+    private final List<Header> headers = new LinkedList<Header>();
 
     private JSONObject json;
 

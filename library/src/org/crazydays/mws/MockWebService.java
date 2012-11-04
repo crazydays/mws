@@ -13,10 +13,10 @@ import org.crazydays.mws.respond.Respond;
 
 public class MockWebService
 {
-    private WebServer server;
+    private final WebServer server;
 
-    private List<Expect> expects;
-    private Map<String, ExpectHttpRequestHandler> handlers;
+    private final List<Expect> expects;
+    private final Map<String, ExpectHttpRequestHandler> handlers;
 
     /**
      * MockWebService constructor.

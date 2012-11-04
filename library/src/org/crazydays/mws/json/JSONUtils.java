@@ -7,8 +7,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class JSONUtils
+public final class JSONUtils
 {
+    private JSONUtils()
+    {
+    }
+
     public static boolean equals(JSONObject a, JSONObject b)
         throws JSONException
     {
@@ -31,7 +35,7 @@ public class JSONUtils
         return true;
     }
 
-    public final static boolean equals(JSONArray a, JSONArray b)
+    public static boolean equals(JSONArray a, JSONArray b)
         throws JSONException
     {
         if (a.length() != b.length()) {
@@ -47,7 +51,7 @@ public class JSONUtils
         return true;
     }
 
-    private final static boolean equals(Object a, Object b)
+    private static boolean equals(Object a, Object b)
         throws JSONException
     {
         if (a instanceof JSONObject && b instanceof JSONObject) {

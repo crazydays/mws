@@ -17,9 +17,9 @@ import static org.crazydays.mws.http.HttpHelpers.*;
 public class CachedHttpRequestFacade
     implements HttpRequestFacade
 {
-    private HttpRequest request;
+    private final HttpRequest request;
     private List<String> headerKeys;
-    private Map<String, List<String>> cachedHeaders =
+    private final Map<String, List<String>> cachedHeaders =
         new HashMap<String, List<String>>();
     private String entityContent;
 

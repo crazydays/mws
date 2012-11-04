@@ -32,9 +32,9 @@ public class WebServer
 {
     private final static int BACKLOG = 5;
 
-    private int port;
+    private final int port;
 
-    private Map<String, HttpRequestHandler> handlers;
+    private final Map<String, HttpRequestHandler> handlers;
 
     private ServerSocket listenSocket;
     private BasicHttpProcessor processor;
@@ -42,7 +42,7 @@ public class WebServer
     private HttpService service;
     private HttpRequestHandlerRegistry registry;
 
-    private ServiceThread thread;
+    private final ServiceThread thread;
 
     public WebServer(int port)
     {

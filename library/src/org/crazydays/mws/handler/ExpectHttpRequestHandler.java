@@ -19,8 +19,8 @@ import org.crazydays.mws.respond.Respond;
 public class ExpectHttpRequestHandler
     implements HttpRequestHandler
 {
-    private List<Expect> expects = new LinkedList<Expect>();
-    private List<Respond> responds = new LinkedList<Respond>();
+    private final List<Expect> expects = new LinkedList<Expect>();
+    private final List<Respond> responds = new LinkedList<Respond>();
 
     public void expectAndRespond(Expect expect, Respond respond)
     {

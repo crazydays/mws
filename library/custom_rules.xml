@@ -1,0 +1,27 @@
+<project name="mws_custom">
+
+    <taskdef name="pmd" classname="net.sourceforge.pmd.ant.PMDTask">
+        <classpath>
+            <fileset dir="deps">
+                <include name="**/*.jar"/>
+            </fileset>
+        </classpath>
+    </taskdef>
+
+    <target name="pmd">
+        <pmd shortFilenames="true">
+            <formatter type="html" toFile="pmd_report.html"/>
+            <formatter type="xml" toFile="pmd_report.xml"/>
+            <ruleset>java-android</ruleset>
+            <ruleset>java-basic</ruleset>
+            <ruleset>java-design</ruleset>
+            <ruleset>java-typeresolution</ruleset>
+<!--
+            <ruleset>java-coupling</ruleset>
+-->
+            <fileset dir="src">
+                <include name="**/*.java"/>
+            </fileset>
+        </pmd>
+    </target>
+</project>
